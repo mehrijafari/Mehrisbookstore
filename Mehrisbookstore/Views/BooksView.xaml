@@ -4,7 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mehrisbookstore.Views"
+             xmlns:UI="clr-namespace:Mehrisbookstore.ViewModel"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=UI:MainWindowViewModel,IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -20,81 +23,50 @@
         </Grid.RowDefinitions>
 
         <Label Content="Books" 
-FontWeight="Bold" 
-Margin="10 0 0 0"/>
+               FontWeight="Bold" 
+               Margin="10 0 0 0"/>
         <StackPanel Grid.Column="1" 
-     Grid.Row="0"
-     Orientation="Horizontal"
-     HorizontalAlignment="Right">
+                    Grid.Row="0"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
             <Button Height="20"
-     Width="20"
-     Margin="0 0 5 0"/>
+                    Width="20"
+                    Margin="0 0 5 0"
+                    Content="{fa:Icon Plus}"
+                    Command="{Binding BooksViewModel.OpenAddNewBookCommand}"
+                  />
             <Button Height="20"
-     Width="20"/>
+                    Width="20"
+                    Margin="0 0 5 0"
+                    Content="{fa:Icon Minus}"
+                    Command="{Binding BooksViewModel.DeleteBookCommand}"/>
+            <Button Height="20" 
+                    Width="20"
+                    Content="{fa:Icon Gear}"
+                    Command="{Binding BooksViewModel.OpenEditBookCommand}"
+                    />
+
 
         </StackPanel>
         <ListBox Grid.Column="0" 
-  Grid.Row="1" 
-  Grid.RowSpan="2"
-  Grid.ColumnSpan="2"
-  Margin="10 0 0 10">
+                 Grid.Row="1" 
+                 Grid.RowSpan="2"
+                 Grid.ColumnSpan="2"
+                 Margin="10 0 0 10"
+                 FontWeight="DemiBold"
+                 FontSize="15"
+                 ItemsSource="{Binding BooksViewModel.Books}"
+                 SelectedItem="{Binding BooksViewModel.SelectedBook}"
+                 DisplayMemberPath="Title">
 
         </ListBox>
 
         <DataGrid Grid.Column="2" 
    Grid.Row="1"
                   Grid.ColumnSpan="2"
-   Margin="10 0 10 0">
+                  Grid.RowSpan="2"
+   Margin="10 0 10 10">
 
         </DataGrid>
-        <StackPanel Grid.Column="2"
-     Grid.Row="2"
-     HorizontalAlignment="Left">
-            <Label Content="ISBN"
-    FontWeight="Bold"
-    Margin="5 10 0 0"/>
-            <TextBox Width="150"
-      Height="22"
-      Margin="10 0 0 0"/>
-            <Label Content="Title"
-FontWeight="Bold"
-Margin="5 10 0 0"/>
-            <ComboBox Width="150"
-  Height="22"
-  Margin="10 0 0 0"/>
-            <Label Content="Language"
-FontWeight="Bold"
-Margin="5 10 0 0"/>
-            <TextBox Width="150"
-  Height="22"
-  Margin="10 0 0 0"/>
-            <Label Content="Price"
-FontWeight="Bold"
-Margin="5 10 0 0"/>
-            <TextBox Width="150"
-  Height="22"
-  Margin="10 0 0 0"/>
-        </StackPanel>
-        <StackPanel Grid.Column="3"
-                    Grid.Row="2"
-                    HorizontalAlignment="Left">
-            <Label Content="Publish date"
-                   FontWeight="Bold"
-                   Margin="5 10 0 0"/>
-            <DatePicker Width="150"
-                Margin="10 0 0 0"/>
-            <Label Content="Pages"
-FontWeight="Bold"
-Margin="5 10 0 0"/>
-            <TextBox Width="150"
-  Height="22"
-  Margin="10 0 0 0"/>
-            <Label Content="Publisher (ID)"
-FontWeight="Bold"
-Margin="5 10 0 0"/>
-            <ComboBox Width="150"
-  Height="22"
-  Margin="10 0 0 0"/>
-        </StackPanel>
     </Grid>
 </UserControl>

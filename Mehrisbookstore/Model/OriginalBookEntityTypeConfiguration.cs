@@ -14,6 +14,8 @@ public class OriginalBookEntityTypeConfiguration : IEntityTypeConfiguration<Orig
         builder.Property(e => e.Id).HasColumnName("ID");
         builder.Property(e => e.OriginalTitle)
             .HasMaxLength(100)
-            .HasColumnName("Original title");       
+            .HasColumnName("Original title");
+
+        
     }
 }

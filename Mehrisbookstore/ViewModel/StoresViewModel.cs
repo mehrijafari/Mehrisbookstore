@@ -15,6 +15,7 @@ internal class StoresViewModel : ViewModelBase
     public EditQuantity EditQuantity { get; set; }
     public TransferBooks TransferBooks { get; set; }
     public AddBookWindow AddBookWindow { get; set; }
+    public DeleteBookWindow DeleteBookWindow { get; set; }
     public DelegateCommand OpenTransferBooksCommand { get; }
     public DelegateCommand OpenEditQuantityCommand { get;}
     public DelegateCommand CloseEditQuantityCommand { get; }
@@ -23,14 +24,16 @@ internal class StoresViewModel : ViewModelBase
     public DelegateCommand EditQuantityCommand { get; }
     public DelegateCommand AddQuantityCommand { get; }
     public DelegateCommand SubtractQuantityCommand { get; }
-    public DelegateCommand AddBookCommand { get; set; }
-    public ObservableCollection<Author> AuthorsOfOriginalTitle { get; set; } //TODO:Ta bort om du ej ska ha
-    public ObservableCollection<string> Stores { get; private set; }
+    public DelegateCommand AddBookCommand { get; }
+    public DelegateCommand OpenDeleteBookCommand { get; }
+    public DelegateCommand DeleteBookCommand { get; }
+    public DelegateCommand CloseDeleteBookCommand { get; }
+    public ObservableCollection<Store> Stores { get; private set; }
     public ObservableCollection<Book> PossibleBooksToAdd { get; set; }
     public ObservableCollection<Book> PossibleIsbnToAdd { get; set; }
     public ObservableCollection<string> PossibleRecipientStores { get; set; } 
-    public ObservableCollection<string> BooksInSelectedStore { get; set; }
-    public ObservableCollection<string> IsbnInSelectedStore { get; set; }
+    public ObservableCollection<Book> BooksInSelectedStore { get; set; }
+    public ObservableCollection<Book> IsbnInSelectedStore { get; set; }
 
     private int _amountOfBooksToEdit;
 
@@ -45,9 +48,9 @@ internal class StoresViewModel : ViewModelBase
     }
 
 
-    private string? _selectedStore;
+    private Store _selectedStore;
 
-    public string? SelectedStore
+    public Store SelectedStore
     {
         get => _selectedStore;
         set 
@@ -68,9 +71,9 @@ internal class StoresViewModel : ViewModelBase
         }
     }
 
-    private string _selectedIsbn;
+    private Book _selectedIsbn;
 
-    public string SelectedIsbn
+    public Book SelectedIsbn
     {
         get => _selectedIsbn;
         set 
@@ -80,9 +83,9 @@ internal class StoresViewModel : ViewModelBase
         }
     }
 
-    private string _selectedBook;
+    private Book _selectedBook;
 
-    public string SelectedBook
+    public Book SelectedBook
     {
         get => _selectedBook;
         set 
@@ -117,9 +120,6 @@ internal class StoresViewModel : ViewModelBase
             RaisePropertyChanged();
             LoadPossibleIsbnToAdd();
             RaisePropertyChanged("PossibleIsbnToAdd");
-            //TODO:ta bort om du ej ska ha kvar
-            //LoadAuthorsOfOriginalTitle();
-            //RaisePropertyChanged("AuthorsOfOriginalTitle");
         }
     }
     private Book _selectedIsbnToAdd;
@@ -133,38 +133,73 @@ internal class StoresViewModel : ViewModelBase
             RaisePropertyChanged();
         }
     }
-    //TODO:ta bort om du ej ska ha
-    //private Author _selectedAuthor;
+    private Visibility _storesVisibility;
 
-    //public Author SelectedAuthor
-    //{
-    //    get => _selectedAuthor;
-    //    set 
-    //    {
-    //        _selectedAuthor = value;
-    //        RaisePropertyChanged();
-    //    }
-    //}
-
+    public Visibility StoresVisibility
+    {
+        get => _storesVisibility;
+        set 
+        {
+            _storesVisibility = value;
+            RaisePropertyChanged();
+        }
+    }
 
 
     public ObservableCollection<StoreInventorySummary> StoreInventory { get; private set; }
-    public StoresViewModel(MainWindowViewModel? mainWindowViewModel) 
+    public StoresViewModel(MainWindowViewModel? mainWindowViewModel) //konstruktor
     {
         this.mainWindowViewModel = mainWindowViewModel;
+        StoresVisibility = Visibility.Visible;
+        AmountOfBooksToEdit = 1;
         OpenEditQuantityCommand = new DelegateCommand(OpenEditQuantity);
         EditQuantityCommand = new DelegateCommand(EditAmountOfBooks);
         AddQuantityCommand = new DelegateCommand(AddQuantity);
         SubtractQuantityCommand = new DelegateCommand(SubtractQuantity);
-        AmountOfBooksToEdit = 1;
         CloseEditQuantityCommand = new DelegateCommand(CloseEditQuantity);
         OpenTransferBooksCommand = new DelegateCommand(OpenTransferBooks);
         OpenAddBooksCommand = new DelegateCommand(OpenAddBooks);
         CloseAddBooksCommand = new DelegateCommand(CloseAddBooksWindow);
         AddBookCommand = new DelegateCommand(AddBook);
+        OpenDeleteBookCommand = new DelegateCommand(OpenDeleteBook);
+        DeleteBookCommand = new DelegateCommand(DeleteBook);
+        CloseDeleteBookCommand = new DelegateCommand(CloseDeleteBook);
         LoadStores();
         
 
+    }
+
+    private void CloseDeleteBook(object obj)
+    {
+        DeleteBookWindow.Close();
+    }
+
+    private void DeleteBook(object obj)
+    {
+        using var db = new MehrisbookstoreContext();
+
+        var recordToDelete = db.InventoryBalances
+            .Where(ib => ib.Isbn == SelectedIsbn.Isbn13 && ib.Store.StoreName == SelectedStore.StoreName)
+            .FirstOrDefault();
+
+        if (recordToDelete != null)
+        {
+            db.InventoryBalances.Remove(recordToDelete);
+            db.SaveChanges();
+            LoadStoreInventory();
+            RaisePropertyChanged("StoreInventory");
+            LoadBooksInSelectedStore();
+            RaisePropertyChanged("BooksInSelectedStore");
+            LoadPossibleBooksToAdd();
+            RaisePropertyChanged("PossibleBooksToAdd");
+            DeleteBookWindow.Close();
+        }
+    }
+
+    private void OpenDeleteBook(object obj)
+    {
+        DeleteBookWindow = new DeleteBookWindow();
+        DeleteBookWindow.Show();
     }
 
     private void AddBook(object obj)
@@ -172,7 +207,7 @@ internal class StoresViewModel : ViewModelBase
         using var db = new MehrisbookstoreContext();
 
         var store = db.Stores
-            .Where(s => s.StoreName == SelectedStore)
+            .Where(s => s.StoreName == SelectedStore.StoreName)
             .FirstOrDefault();
 
         var newInventoryBalance = new InventoryBalance()
@@ -186,85 +221,80 @@ internal class StoresViewModel : ViewModelBase
         db.SaveChanges();
         LoadStoreInventory();
         RaisePropertyChanged("StoreInventory");
+        LoadBooksInSelectedStore();
+        RaisePropertyChanged("BooksInSelectedStore");
+        LoadPossibleBooksToAdd();
+        RaisePropertyChanged("PossibleBooksToAdd");
         AddBookWindow.Close();
     }
-
     private void CloseAddBooksWindow(object obj)
     {
         AddBookWindow.Close();
     }
-
     private void OpenAddBooks(object obj)
     {
         AddBookWindow = new AddBookWindow();
         AddBookWindow.Show();
     }
-
     private void OpenTransferBooks(object obj)
     {
         TransferBooks = new TransferBooks();
         TransferBooks.Show();
     }
-
     private void CloseEditQuantity(object obj)
     {
         AmountOfBooksToEdit = 1;
         EditQuantity.Close();
     }
-
     private void SubtractQuantity(object obj)
     {
         AmountOfBooksToEdit--;
     }
-
     private void AddQuantity(object obj)
     {
         AmountOfBooksToEdit++;
     }
-
     private void EditAmountOfBooks(object obj)
     {
         using var db = new MehrisbookstoreContext();
 
         //hitta rätt InventoryBalance
-        var inventoryBalance = db.InventoryBalances
-          .Include(ib => ib.IsbnNavigation)
-          .Include(ib => ib.Store)
-          .Where(ib => ib.IsbnNavigation.Title.Equals(SelectedBook) && ib.Store.StoreName.Equals(SelectedStore) && ib.Isbn.Equals(SelectedIsbn))
-          .First();
+            //var inventoryBalance = new InventoryBalance();
 
-        //Redigera Quantity på inventory balance
+            var inventoryBalance = db.InventoryBalances
+            .Include(ib => ib.IsbnNavigation)
+            .Include(ib => ib.Store)
+            .Where(ib => ib.IsbnNavigation.Title.Equals(SelectedBook.Title) && ib.Store.StoreName.Equals(SelectedStore.StoreName) && ib.Isbn.Equals(SelectedIsbn.Isbn13))
+            .FirstOrDefault();
+        
 
-        if (AmountOfBooksToEdit < 0 && -AmountOfBooksToEdit > inventoryBalance.Quantity)
-        {
-            MessageBox.Show($"Can not remove {-AmountOfBooksToEdit} books. There are only {inventoryBalance.Quantity} books in stock.");
-            return;
-        }
+            //Redigera Quantity på inventory balance
+            if (AmountOfBooksToEdit < 0 && -AmountOfBooksToEdit > inventoryBalance.Quantity)
+            {
+                MessageBox.Show($"Can not remove {-AmountOfBooksToEdit} books. There are only {inventoryBalance.Quantity} books in stock.");
+                return;
+            }
        
-        inventoryBalance.Quantity += AmountOfBooksToEdit;
-        db.SaveChanges();
+            inventoryBalance.Quantity += AmountOfBooksToEdit;
+            db.SaveChanges();
 
-        LoadStoreInventory();
-        RaisePropertyChanged("StoreInventory");
+            LoadStoreInventory();
+            RaisePropertyChanged("StoreInventory");
 
-        AmountOfBooksToEdit = 1;
-        EditQuantity.Close();
+            AmountOfBooksToEdit = 1;
+            EditQuantity.Close();
     }
-
     private void OpenEditQuantity(object obj)
     {
         EditQuantity = new EditQuantity();
         EditQuantity.Show();
     }
-
-
     private void LoadStores()
     {
         using var db = new MehrisbookstoreContext();
 
-        Stores = new ObservableCollection<string>(
-            db.Stores.Select(s => s.StoreName).ToList()
-
+        Stores = new ObservableCollection<Store>(
+            db.Stores.ToList()
             );
 
         SelectedStore = Stores.FirstOrDefault();
@@ -274,27 +304,8 @@ internal class StoresViewModel : ViewModelBase
         using var db = new MehrisbookstoreContext();
 
         PossibleRecipientStores = new ObservableCollection<string>(
-            db.Stores.Where(s => s.StoreName != SelectedStore).Select(s => s.StoreName).ToList()
+            db.Stores.Where(s => s.StoreName != SelectedStore.StoreName).Select(s => s.StoreName).ToList()
         );
-    }
-    private void LoadPossibleBooksToAdd()
-    {
-        using var db = new MehrisbookstoreContext();
-
-        var booksNotInStore = db.Books
-            .Where(b => !db.InventoryBalances
-                .Include(ib => ib.Store)
-                .Include(ib => ib.IsbnNavigation)
-                .Where(ib => ib.Store.StoreName == SelectedStore)
-                .Select(ib => ib.Isbn)
-                .Contains(b.Isbn13))
-                .Distinct()
-            .ToList();
-
-        PossibleBooksToAdd = new ObservableCollection<Book>(booksNotInStore);
-        SelectedBookToAdd = PossibleBooksToAdd.FirstOrDefault();
-        
-       
     }
     private void LoadPossibleIsbnToAdd() 
     {
@@ -302,12 +313,12 @@ internal class StoresViewModel : ViewModelBase
 
         PossibleIsbnToAdd = new ObservableCollection<Book>();
 
-        var allBooks = db.Books  
-            .Where(b => b.Title == SelectedBookToAdd.Title)
+        var allBooks = db.Books
+            .Where(b => b.OriginalTitleId == SelectedBookToAdd.OriginalTitleId)
             .ToList();
 
         var existingIsbn = db.InventoryBalances
-            .Where(ib => ib.Store.StoreName == SelectedStore)
+            .Where(ib => ib.Store.StoreName == SelectedStore.StoreName)
             .Select(ib => ib.Isbn)
             .ToList();
 
@@ -321,56 +332,56 @@ internal class StoresViewModel : ViewModelBase
 
         SelectedIsbnToAdd = PossibleIsbnToAdd.FirstOrDefault();
     }
-
-    //private void LoadAuthorsOfOriginalTitle()
-    //{
-    //    using var db = new MehrisbookstoreContext();
-
-    //    AuthorsOfOriginalTitle = new ObservableCollection<Author>();
-
-    //    var authors = db.Books
-    //        .Where(b => b.Title == SelectedBookToAdd.Title)
-    //        .SelectMany(b => b.OriginalTitle.Authors)
-    //        .ToList();
-
-    //    foreach (var author in authors)
-    //    {
-    //        AuthorsOfOriginalTitle.Add(author);
-    //    }
-
-    //    SelectedAuthor = AuthorsOfOriginalTitle.FirstOrDefault();
-    //}
     private void LoadIsbnInSelectedStore()
     {
         using var db = new MehrisbookstoreContext();
 
-        IsbnInSelectedStore = new ObservableCollection<string>(
+        IsbnInSelectedStore = new ObservableCollection<Book>(
             db.InventoryBalances
             .Include(ib => ib.IsbnNavigation)
             .Include(ib => ib.Store)
-            .Where(ib => ib.IsbnNavigation.Title.Equals(SelectedBook) && ib.Store.StoreName.Equals(SelectedStore))
-            .Select(ib => ib.Isbn)
+            .Where(ib => ib.IsbnNavigation.OriginalTitleId == SelectedBook.OriginalTitleId && ib.Store.StoreName.Equals(SelectedStore.StoreName))
+            .Select(ib => ib.IsbnNavigation)
             .Distinct()
             .ToList()
 
         );
         SelectedIsbn = IsbnInSelectedStore.FirstOrDefault();
     }
-
-    
-  
-    private void LoadBooksInSelectedStore()
+    public void LoadPossibleBooksToAdd()
     {
         using var db = new MehrisbookstoreContext();
 
-        BooksInSelectedStore = new ObservableCollection<string>(
-            db.Books.Select(b => b.Title)
-            .Distinct()
-            .ToList()
-        );
-        SelectedBook = BooksInSelectedStore.FirstOrDefault();
+        var booksNotInStore = db.Books
+            .Where(b => !db.InventoryBalances
+                .Include(ib => ib.Store)
+                .Include(ib => ib.IsbnNavigation)
+                .Where(ib => ib.Store.StoreName == SelectedStore.StoreName)
+                .Select(ib => ib.Isbn)
+                .Contains(b.Isbn13))
+                .Distinct()
+            .ToList();
+
+        PossibleBooksToAdd = new ObservableCollection<Book>(booksNotInStore);
+        SelectedBookToAdd = PossibleBooksToAdd.FirstOrDefault();
+        RaisePropertyChanged("PossibleBooksToAdd");
+       
     }
-    private void LoadStoreInventory()
+    public void LoadBooksInSelectedStore()
+    {
+        using var db = new MehrisbookstoreContext();
+
+        BooksInSelectedStore = new ObservableCollection<Book>(
+                db.Books
+                .Include(b => b.InventoryBalances)
+                .Where(b => b.InventoryBalances.Any(ib => ib.Store.StoreName == SelectedStore.StoreName))
+                .Distinct()
+                .ToList()
+            );
+        SelectedBook = BooksInSelectedStore.FirstOrDefault();
+        RaisePropertyChanged("BooksInSelectedStore");
+    }
+    public void LoadStoreInventory()
     {
         using var db = new MehrisbookstoreContext();
 
@@ -379,24 +390,17 @@ internal class StoresViewModel : ViewModelBase
                 .Include(ib => ib.Store)
                 .Include(ib => ib.IsbnNavigation)
                 .Include(ib => ib.IsbnNavigation.OriginalTitle.Authors) 
-                .Where(ib => ib.Store.StoreName == SelectedStore)
+                .Where(ib => ib.Store.StoreName == SelectedStore.StoreName)
                 .Select(ib => new StoreInventorySummary()
                 {
                     StoreID = ib.StoreId,
-                    Title = ib.IsbnNavigation.Title,
+                    Title = ib.IsbnNavigation.Title, 
                     ISBN = ib.Isbn,
                     Quantity = ib.Quantity,
                     Authors = string.Join(", ", ib.IsbnNavigation.OriginalTitle.Authors.Select(a => $"{a.FirstName} {a.LastName}"))
                 })
                 .ToList()
          );
+        RaisePropertyChanged("StoreInventory");
     }
-}
-public class StoreInventorySummary
-{
-    public int StoreID { get; set; }
-    public string? Title { get; set; }
-    public string? ISBN { get; set; }
-    public int Quantity { get; set; }
-    public string? Authors { get; set; }
 }

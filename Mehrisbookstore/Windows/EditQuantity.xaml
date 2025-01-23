@@ -19,17 +19,20 @@
                 <ComboBox
          Width="150"
                     ItemsSource="{Binding StoresViewModel.Stores}"
-                    SelectedItem="{Binding StoresViewModel.SelectedStore}"/>
+                    SelectedItem="{Binding StoresViewModel.SelectedStore}"
+                    DisplayMemberPath="StoreName"/>
                 <Label Content="Title:"
              FontWeight="Bold"/>
                 <ComboBox Width="150"
                         ItemsSource="{Binding StoresViewModel.BooksInSelectedStore}"
-                          SelectedItem="{Binding StoresViewModel.SelectedBook}"/>
+                          SelectedItem="{Binding StoresViewModel.SelectedBook}"
+                          DisplayMemberPath="Title"/>
                 <Label Content="ISBN:"
              FontWeight="Bold"/>
                 <ComboBox Width="150"
                           ItemsSource="{Binding StoresViewModel.IsbnInSelectedStore}"
-                          SelectedItem="{Binding StoresViewModel.SelectedIsbn}"/>
+                          SelectedItem="{Binding StoresViewModel.SelectedIsbn}"
+                          DisplayMemberPath="Isbn13"/>
            
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Quantity:"

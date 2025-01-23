@@ -5,8 +5,10 @@
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mehrisbookstore" xmlns:Views="clr-namespace:Mehrisbookstore.Views"
+        xmlns:UI="clr-namespace:Mehrisbookstore.ViewModel"
         mc:Ignorable="d"
-        Title="Mehri's bookstore" Height="450" Width="800">
+        d:DataContext="{d:DesignInstance Type=UI:MainWindowViewModel,IsDesignTimeCreatable=True}"
+        Title="Mehri's bookstore" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -14,13 +16,15 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        
+
         <Views:MenuView Grid.Row="0"/>
        
-        <Views:StoresView Grid.Row="1"/>
-        <!--<Views:AuthorView Grid.Row="1"/>-->
-        <!--<Views:PublisherView Grid.Row="1"/>-->
-        <!--<Views:BooksView Grid.Row="1"/>-->
-        <!--<Views:TitlesView Grid.Row="1"/>-->
+        <Views:StoresView Grid.Row="1" Visibility="{Binding StoresViewModel.StoresVisibility}"/>
+        <Views:AuthorView Grid.Row="1" Visibility="{Binding AuthorViewModel.AuthorVisibility}" />
+        <Views:PublisherView Grid.Row="1" Visibility="{Binding PublisherViewModel.PublisherVisibility}"/>
+        <Views:BooksView Grid.Row="1" Visibility="{Binding BooksViewModel.BooksVisibility}"/>
+        <Views:TitlesView Grid.Row="1" Visibility="{Binding TitlesViewModel.TitlesVisibility}"/>
 
     </Grid>
 </Window>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Mehrisbookstore;
 
@@ -56,7 +57,11 @@ public partial class MehrisbookstoreContext : DbContext
         new AverageRatingPerBookEntityTypeConfiguration().Configure(modelBuilder.Entity<AverageRatingPerBook>());
         new AuthorEntityTypeConfiguration().Configure(modelBuilder.Entity<Author>());
         OnModelCreatingPartial(modelBuilder);
+
+      
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
 }
+

@@ -1,0 +1,76 @@
+﻿<Window x:Class="Mehrisbookstore.Windows.EditTitleWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Mehrisbookstore.Windows"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+        xmlns:UI="clr-namespace:Mehrisbookstore.ViewModel"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=UI:MainWindowViewModel,IsDesignTimeCreatable=True}"
+        Title="EditTitleWindow" Height="270" Width="300" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
+    <Grid>
+        <StackPanel>
+            <StackPanel HorizontalAlignment="Center"
+                Margin="0 25 0 0">
+                <Label Content="Title:"
+               FontWeight="Bold"/>
+                <TextBox Width="250"
+                 Text="{Binding TitlesViewModel.OriginalBookBeingEdited.OriginalTitle}"/>
+                <Label Content="Authors:"
+               FontWeight="Bold"/>
+                <ListBox Width="250"
+                 Height="60"
+                         ItemsSource="{Binding TitlesViewModel.AuthorsInOriginalBook}"
+                         SelectedItem="{Binding TitlesViewModel.AuthorToRemove}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <Run Text="{Binding FirstName}"/>
+                                <Run Text="{Binding LastName}"/>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox Width="140"
+                      Margin="0 10 0 0"
+                        ItemsSource="{Binding TitlesViewModel.AuthorsToAddInEdit}"
+                              SelectedItem="{Binding TitlesViewModel.AuthorToAddInEdit}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <Run Text="{Binding FirstName}"/>
+                                    <Run Text="{Binding LastName}"/>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Content="{fa:Icon Plus}"
+                    Width="18"
+                    Margin="3 10 0 0"
+                            Command="{Binding TitlesViewModel.AddAuthorToExistingTitleCommand}"
+                            />
+                    <Button Width="18"
+                            Margin="3 10 0 0"
+                            Content="{fa:Icon Minus}"
+                            Command="{Binding TitlesViewModel.RemoveAuthorInExistingTitleCommand}"/>
+                    <Button Content="New author"
+                    Margin="3 10 0 0"
+                            Command="{Binding AuthorViewModel.OpenAddAuthorCommand}"
+                    />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Cancel"
+                Margin="43 10 10 0"
+                Width="80"
+                            Command="{Binding TitlesViewModel.CloseEditTitleCommand}"/>
+                    <Button Content="Save Changes"
+                    Margin="0 10 0 0"
+                    Width="80"
+                            Command="{Binding TitlesViewModel.EditTitleCommand}"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

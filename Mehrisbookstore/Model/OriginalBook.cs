@@ -14,4 +14,5 @@ public partial class OriginalBook
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
+  
 }

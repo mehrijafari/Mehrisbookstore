@@ -1,0 +1,130 @@
+﻿<Window x:Class="Mehrisbookstore.Windows.AddNewBookWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Mehrisbookstore.Windows"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+        xmlns:UI="clr-namespace:Mehrisbookstore.ViewModel"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=UI:MainWindowViewModel,IsDesignTimeCreatable=True}"
+        Title="Add New Book" Height="600" Width="400" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="75"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="1">
+            <StackPanel HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+                <Label Content="ISBN13:" 
+                       FontWeight="Bold"
+                       />
+                <TextBox Width="150"
+                         Text="{Binding BooksViewModel.NewBook.Isbn13}"
+                         PreviewTextInput="ISBN13Input"
+                         MaxLength="13"/>
+            </StackPanel>
+                <Label Content="Title:"
+                       FontWeight="Bold"/>
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox Width="150"
+                              ItemsSource="{Binding BooksViewModel.OriginalBooks}"
+                              DisplayMemberPath="OriginalTitle"
+                              SelectedItem="{Binding BooksViewModel.NewBookTitle}"
+                              />
+                    <Button Content="New Title" 
+                            Width="90"
+                            Margin="20 0 0 0"
+                            Command="{Binding TitlesViewModel.OpenAddNewTitleCommand}"/>
+                </StackPanel>
+            <StackPanel HorizontalAlignment="Left">
+            <Label Content="Language:"
+                       FontWeight="Bold"/>
+                <TextBox Width="150"
+                         Text="{Binding BooksViewModel.NewBook.Language}"/>
+                <Label Content="Price:"
+                       FontWeight="Bold"/>
+                <TextBox Width="150"
+                         Text="{Binding BooksViewModel.NewBook.Price}"
+                         PreviewTextInput="PriceInput"/>
+                <Label Content="Publish date:"
+                       FontWeight="Bold"/>
+                <DatePicker Width="150"
+                            SelectedDate="{Binding BooksViewModel.PublishdateDateTime}"/>
+                <Label Content="Pages:"
+                       FontWeight="Bold"/>
+                <TextBox Width="150"
+                         Text="{Binding BooksViewModel.NewBook.Pages}"
+                         PreviewTextInput="PagesInput"/>
+            </StackPanel>
+                <Label Content="Publisher:"
+                       FontWeight="Bold"/>
+            <StackPanel Orientation="Horizontal">
+                <ComboBox Width="150"
+                          ItemsSource="{Binding BooksViewModel.Publishers}"
+                          DisplayMemberPath="NameOfPublisher"
+                          SelectedItem="{Binding BooksViewModel.SelectedPublisher}"/>
+                <Button Content="New Publisher"
+                        Margin="20 0 0 0"
+                        Width="100"
+                        Command="{Binding PublisherViewModel.OpenAddNewPulisherCommand}"/>
+            </StackPanel>
+            <Label Content="Author:"
+                   FontWeight="Bold"/>
+            <StackPanel HorizontalAlignment="Left">
+                <ListBox Width="270"
+                         Height="40"
+                         ItemsSource="{Binding BooksViewModel.Authors}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <Run Text="{Binding FirstName}"/>
+                                <Run Text="{Binding LastName}"/>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+            <Label Content="Genre:"
+                   FontWeight="Bold"/>
+            <StackPanel HorizontalAlignment="Left">
+                <ListBox Width="270"
+                         Height="40"
+                         ItemsSource="{Binding BooksViewModel.GenresAdded}"
+                         DisplayMemberPath="NameOfGenre"
+                         SelectedItem="{Binding BooksViewModel.Genre}"/>
+                
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"
+                        Margin="0 5 0 0">
+                <ComboBox Width="135"
+                          ItemsSource="{Binding BooksViewModel.Genres}"
+                          DisplayMemberPath="NameOfGenre"
+                          SelectedItem="{Binding BooksViewModel.GenreToAdd}"/>
+                <Button Content="{fa:Icon Plus}"
+                        Margin="11 0 0 0"
+                        Width="22"
+                        Command="{Binding BooksViewModel.AddGenreCommand}"/>
+                <Button Content="{fa:Icon Minus}"
+                        Margin="5 0 0 0"
+                        Width="22"
+                        Command="{Binding BooksViewModel.RemoveGenreCommand}"/>
+                <Button Content="New Genre"
+                        Margin="5 0 0 0"
+                        Width="70"
+                        Command="{Binding GenreViewModel.OpenAddNewGenreCommand}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Cancel"
+                        Width="90"
+                        Margin="0 20 0 0"
+                        Command="{Binding BooksViewModel.CloseAddNewBookCommand}"/>
+                <Button Content="Add new book"
+                        Width="90"
+                        Margin="10 20 0 0"
+                        Command="{Binding BooksViewModel.AddNewBookCommand}"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

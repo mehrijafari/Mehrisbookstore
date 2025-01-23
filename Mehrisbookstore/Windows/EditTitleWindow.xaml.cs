@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Mehrisbookstore.Windows
 {
     /// <summary>
-    /// Interaction logic for TransferBooks.xaml
+    /// Interaction logic for EditTitleWindow.xaml
     /// </summary>
-    public partial class TransferBooks : Window
+    public partial class EditTitleWindow : Window
     {
-        public TransferBooks()
+        public EditTitleWindow()
         {
             InitializeComponent();
             DataContext = (App.Current.MainWindow as MainWindow).DataContext;

@@ -1,0 +1,141 @@
+﻿<Window x:Class="Mehrisbookstore.Windows.EditBookWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Mehrisbookstore.Windows"
+        xmlns:UI="clr-namespace:Mehrisbookstore.ViewModel"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=UI:MainWindowViewModel,IsDesignTimeCreatable=True}"
+        Title="Edit Book" Height="600" Width="400" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="75"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="1">
+            <StackPanel HorizontalAlignment="Left"
+                VerticalAlignment="Top">
+                <Label Content="ISBN13:" 
+               FontWeight="Bold"
+               />
+                <TextBox Width="150"
+                         Text="{Binding BooksViewModel.BookBeingEdited.Isbn13}"
+                         PreviewTextInput="PreviewIsbn"
+                 MaxLength="13"/>
+            </StackPanel>
+            
+            <Label Content="Title:"
+               FontWeight="Bold"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Width="150"
+                      IsReadOnly="True"
+                         Text="{Binding BooksViewModel.BookBeingEdited.Title}"
+                      />
+                
+            </StackPanel>
+            <Label Content="Author:"
+FontWeight="Bold"/>
+            <StackPanel HorizontalAlignment="Left">
+                <ListBox Width="270"
+      Height="40"
+      ItemsSource="{Binding BooksViewModel.AuthorsInEdit}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <Run Text="{Binding FirstName}"/>
+                                <Run Text="{Binding LastName}"/>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left">
+                <Label Content="Edit title and connected author in Title"
+       FontStyle="Italic"/>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left">
+                <Label Content="Language:"
+               FontWeight="Bold"/>
+                <TextBox Width="150"
+                         Text="{Binding BooksViewModel.BookBeingEdited.Language}"
+                 />
+                <Label Content="Price:"
+               FontWeight="Bold"/>
+                <TextBox Width="150"
+                         Text="{Binding BooksViewModel.BookBeingEdited.Price}"
+                         PreviewTextInput="PriceInput"
+                 />
+                <Label Content="Publish date:"
+               FontWeight="Bold"/>
+                <DatePicker Width="150"
+                            SelectedDate="{Binding BooksViewModel.PublishdateDateTimeEdit}"
+                   />
+                <Label Content="Pages:"
+               FontWeight="Bold"/>
+                <TextBox Width="150"
+                         Text="{Binding BooksViewModel.BookBeingEdited.Pages}"
+                         PreviewTextInput="PagesInput"
+                 />
+            </StackPanel>
+            <Label Content="Publisher:"
+               FontWeight="Bold"/>
+            <StackPanel Orientation="Horizontal">
+                <ComboBox Width="150"
+                          ItemsSource="{Binding BooksViewModel.PublishersInEdit}"
+                          DisplayMemberPath="NameOfPublisher"
+                          SelectedItem="{Binding BooksViewModel.PublisherInEdit}"
+                         
+                />
+                <Button Content="New Publisher"
+                Margin="20 0 0 0"
+                Width="100"
+                        Command="{Binding PublisherViewModel.OpenAddNewPulisherCommand}"
+              />
+            </StackPanel>
+            <Label Content="Genre:"
+           FontWeight="Bold"/>
+            <StackPanel HorizontalAlignment="Left">
+                <ListBox Width="270"
+                 Height="40"
+                         ItemsSource="{Binding BooksViewModel.GenresInEdit}"
+                         DisplayMemberPath="NameOfGenre"
+                         SelectedItem="{Binding BooksViewModel.GenreInEdit}"
+            />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"
+                Margin="0 5 0 0">
+                <ComboBox Width="136"
+                          ItemsSource="{Binding BooksViewModel.GenresToAddInEdit}"
+                          DisplayMemberPath="NameOfGenre"
+                          SelectedItem="{Binding BooksViewModel.GenreToAddInEdit}"
+                 />
+                <Button Content="{fa:Icon Plus}"
+                Margin="10 0 0 0"
+                Width="22"
+                        Command="{Binding BooksViewModel.AddGenreInEditCommand}"
+             />
+                <Button Margin="5 0 0 0"
+                        Width="22"
+                        Content="{fa:Icon Minus}"
+                        Command="{Binding BooksViewModel.RemoveGenreInEditCommand}"/>
+                <Button Content="New Genre"
+                Margin="5 0 0 0"
+                Width="70"
+                        Command="{Binding GenreViewModel.OpenAddNewGenreCommand}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Cancel"
+                Width="90"
+                Margin="0 20 0 0"
+                        Command="{Binding BooksViewModel.CloseEditBookCommand}"/>
+                <Button Content="Save Changes"
+                Width="90"
+                Margin="10 20 0 0"
+                        Command="{Binding BooksViewModel.EditBookCommand}"
+               />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
