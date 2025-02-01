@@ -13,7 +13,6 @@ internal class StoresViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel? mainWindowViewModel;
     public EditQuantity EditQuantity { get; set; }
-    public TransferBooks TransferBooks { get; set; }
     public AddBookWindow AddBookWindow { get; set; }
     public DeleteBookWindow DeleteBookWindow { get; set; }
     public DelegateCommand OpenTransferBooksCommand { get; }
@@ -157,7 +156,6 @@ internal class StoresViewModel : ViewModelBase
         AddQuantityCommand = new DelegateCommand(AddQuantity);
         SubtractQuantityCommand = new DelegateCommand(SubtractQuantity);
         CloseEditQuantityCommand = new DelegateCommand(CloseEditQuantity);
-        OpenTransferBooksCommand = new DelegateCommand(OpenTransferBooks);
         OpenAddBooksCommand = new DelegateCommand(OpenAddBooks);
         CloseAddBooksCommand = new DelegateCommand(CloseAddBooksWindow);
         AddBookCommand = new DelegateCommand(AddBook);
@@ -165,8 +163,6 @@ internal class StoresViewModel : ViewModelBase
         DeleteBookCommand = new DelegateCommand(DeleteBook);
         CloseDeleteBookCommand = new DelegateCommand(CloseDeleteBook);
         LoadStores();
-        
-
     }
 
     private void CloseDeleteBook(object obj)
@@ -235,11 +231,6 @@ internal class StoresViewModel : ViewModelBase
     {
         AddBookWindow = new AddBookWindow();
         AddBookWindow.Show();
-    }
-    private void OpenTransferBooks(object obj)
-    {
-        TransferBooks = new TransferBooks();
-        TransferBooks.Show();
     }
     private void CloseEditQuantity(object obj)
     {
