@@ -397,7 +397,17 @@ internal class BooksViewModel : ViewModelBase
             db.Publishers.ToList()
             );
 
-        PublisherInEdit = PublishersInEdit.FirstOrDefault(p => p.Id == BookBeingEdited.PublisherId);
+
+        if (BookBeingEdited != null)
+        {
+            PublisherInEdit = PublishersInEdit.FirstOrDefault(p => p.Id == BookBeingEdited.PublisherId);
+        }
+        else
+        {
+            PublisherInEdit = null;
+        }//TODO: lade till denna 
+
+        // PublisherInEdit = PublishersInEdit.FirstOrDefault(p => p.Id == BookBeingEdited.PublisherId);
 
         RaisePropertyChanged("PublishersInEdit");
     }
